@@ -9,6 +9,7 @@ ReceiverData::ReceiverData()
   ibus.begin(Serial1);
 }
 
+
 long ReceiverData::readChannel(byte channelInput, int minLimit, int maxLimit, int defaultValue) 
 {
   uint16_t ch = ibus.readChannel(channelInput);
@@ -25,6 +26,6 @@ long ReceiverData::readSwitch(byte channelInput, int defaultValue)
 
 int ReceiverData::printChannel(byte channelInput, int minLimit, int maxLimit, int defaultValue){
   int value = readChannel(channelInput, minLimit, maxLimit, defaultValue);
-  Serial.println(value);
-  Serial.print("\n");
+  //Serial.println(value);
+  //Serial.print("\n");
 }

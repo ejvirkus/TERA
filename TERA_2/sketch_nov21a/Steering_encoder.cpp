@@ -36,5 +36,6 @@ int Steering_encoder_data::readEncoder()
       }
     }
     digitalWrite(_STEERING_ENCODER_CS_OUT_Pin, HIGH);
+    //Serial.println(encoder_reading);
     return encoder_reading;
   }

@@ -2,10 +2,21 @@
 #include "Arduino.h"
 #define DIR 44      //suuna määramise pin
 #define PUL 40      //steering pulse pin
-#define TO_RIGHT 22   //teleop paremale keeramise pin
-#define TO_LEFT 48    //teleop vasakule keeramise pin
 #define STEERING_CYCLE 20 //keeramise kiirus
 #define DELAY 100
+/*
+int mapping(int a1, int a2, int b1, int b2, int input){
+  int inValNorm = input - a1;
+  int aUpperNorm = a2 - a1;
+  int normPos = inValNorm / aUpperNorm;
+
+  int bUpperNorm = b2 - b1;
+  int bValNorm = normPos * bUpperNorm;
+  int outVal = b1 + bValNorm;
+
+  return outVal;
+}
+*/
 
 Steering::Steering()
 {
@@ -13,8 +24,9 @@ Steering::Steering()
   pinMode(PUL, OUTPUT);
 }
 
-Steering::Left_Right(int value1, int value5, int encoder)
+ int Steering::Left_Right(int value1, int value5, int encoder, uint16_t wheel)
 {
+/*
   if (value5 == 1)
   {
     encoder = encoder / 10;
@@ -49,11 +61,56 @@ Steering::Left_Right(int value1, int value5, int encoder)
       }
 
     }
-    
+    */
 //-----------------------TELEOP KEERAMINE------------------------------------------------------------------------------------------------------------------
+//Steering range = 0(vasak) - 655
+//Steering centre = 328
+//Encoder values = 365 - 170 (195)
 
+
+
+
+
+
+if(value5 == 1){
+    encoder = encoder / 10;
+    //Serial.print(encoder);
+    //Serial.print("\n");
+    int realwheel;
+    if(wheel > 0 && wheel < 656){
+      realwheel = map(wheel, 0, 655, 365, 170);
+    }
+      
+    //mapping(0, 655, 365, 170, wheel);
+    //Serial.println(realwheel);
+    int difference = encoder - realwheel;
+    //Serial.println(difference);
+
+    if(difference < 0 &&  abs(difference) > 10){
+      digitalWrite(DIR, LOW);   //PAREMALE
+
+      for (int i = 0; i < STEERING_CYCLE; i++){    //ühe tsükli pikkus, mida suurem seda pikem ring
+        //these 4 lines result in 1 step:
+        digitalWrite(PUL, HIGH); //PIN 6 = stepPin
+        delayMicroseconds(DELAY);
+        digitalWrite(PUL, LOW);
+        delayMicroseconds(DELAY);
+      }
+    }
+    if(difference > 0 && abs(difference) > 10){
+      digitalWrite(DIR, HIGH);   //VASAKULE
+
+      for (int i = 0; i < STEERING_CYCLE; i++){    //ühe tsükli pikkus, mida suurem seda pikem ring
+        //these 4 lines result in 1 step:
+        digitalWrite(PUL, HIGH); //PIN 6 = stepPin
+        delayMicroseconds(DELAY);
+        digitalWrite(PUL, LOW);
+        delayMicroseconds(DELAY);
+      }
+    }
+  }
     //TULEB MUUTA PINID MILLELT SAAME INFOT KAS KEERAME VÕI EI (TO_RIGHT & TO_LEFT)
-
+/*
     if(digitalRead(TO_RIGHT) == 1){
       digitalWrite(DIR, LOW);   //PAREMALE
 
@@ -77,16 +134,19 @@ Steering::Left_Right(int value1, int value5, int encoder)
       }
     }
   }
+*/
+//----------------------------RC KEERAMINE----------------------------------------------------------------
+//Vahemik = 365-170
   else if(value5 == 0)
   {
     encoder = encoder / 10;
-    Serial.print(encoder);
-    Serial.print("\n");
+    //Serial.print(encoder);
+    //Serial.print("\n");
 
     int difference = encoder - value1;
     //Serial.println(difference);
 
-    if(difference < 0 &&  abs(difference) > 5){
+    if(difference < 0 &&  abs(difference) > 10){
       digitalWrite(DIR, LOW);   //PAREMALE
 
       for (int i = 0; i < STEERING_CYCLE; i++){    //ühe tsükli pikkus, mida suurem seda pikem ring
@@ -97,7 +157,7 @@ Steering::Left_Right(int value1, int value5, int encoder)
         delayMicroseconds(DELAY);
       }
     }
-    if(difference > 0 && abs(difference) > 5){
+    if(difference > 0 && abs(difference) > 10){
       digitalWrite(DIR, HIGH);   //VASAKULE
 
       for (int i = 0; i < STEERING_CYCLE; i++){    //ühe tsükli pikkus, mida suurem seda pikem ring
@@ -109,5 +169,4 @@ Steering::Left_Right(int value1, int value5, int encoder)
       }
     }
   }
-
 }

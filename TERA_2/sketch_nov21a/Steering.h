@@ -6,7 +6,7 @@ class Steering
 {
   public:
     Steering();
-    Left_Right(int value1, int value5, int encoder);
+    int Left_Right(int value1, int value5, int encoder, uint16_t wheel);
 
   private:
 
