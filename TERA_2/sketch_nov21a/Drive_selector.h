@@ -6,7 +6,7 @@ class Drive_selector_switch
 {
   public:
     Drive_selector_switch();
-    int Drive_mode(int value3, int value6);
+    int Drive_mode(int value3, int value6, int throttle, int value5);
 
   private:
     int _value3;
