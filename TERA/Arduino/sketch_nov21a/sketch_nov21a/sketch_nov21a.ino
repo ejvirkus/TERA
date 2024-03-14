@@ -6,9 +6,14 @@
 #include "Drive_selector.h"
 #include "Steering.h"
 
-#define HALL1 3
-#define HALL2 4
-#define HALL3 5
+//Hall sensor pins:
+#define L1 5
+#define L2 6
+#define L3 7
+
+#define R1 2
+#define R2 3
+#define R3 4
 
 ReceiverData receiver;
 Steering_encoder_data encoder(30, 28, 32);
@@ -24,27 +29,45 @@ String received;
 
 int FL_ticks = 0;
 String prev_FL = "000";
+int FR_ticks = 0;
+String prev_FR = "000";
+
+//init variable for serial comm
+String data = "no info";
+int values[2] = {328, 0};
 
 
 void setup() {
-  Serial.begin(115200);   //115200
-  Serial.setTimeout(20);
+  Serial.begin(115200);   //was 115200
+  Serial.setTimeout(10);  //might need to be 40
 
-  pinMode(HALL1, INPUT);
-  pinMode(HALL2, INPUT);
-  pinMode(HALL3, INPUT);
+  pinMode(L1, INPUT);
+  pinMode(L2, INPUT);
+  pinMode(L3, INPUT);
+  pinMode(R1, INPUT);
+  pinMode(R2, INPUT);
+  pinMode(R3, INPUT);
+  
   pinMode(10, INPUT);
 }
 
 void loop() {
-  /*
-  // Reading info from Jetson:
-  while (Serial.available()){
-    received = Serial.readString();
-    ebrake = received.toInt();
-    Serial.println(received);
+  
+  //serial communication
+  if (Serial.available() > 0){
+    data = Serial.readString();
+    //Serial.println(data);
+    
+    values[0] = 328;
+    values[1] = 0;
+    int i = 0;
+    char *ptr =strtok((char *)data.c_str(), ",");
+    while (ptr != NULL && i < 2){
+      values[i++] = atoi(ptr);
+      ptr = strtok(NULL, ",");
+    }
+    //Serial.println(values[0]);
   }
-  */
 
   ebrake = digitalRead(10);
   
@@ -72,23 +95,32 @@ void loop() {
   int encoder_data = (encoder.readEncoder());
 
   //Drive function call
-  drive_select.Drive_mode(value3, value6, fwd, value5, value8, ebrake);
+  //value 3 = RC throttle, value 6 = , values[1] = TO throttle, value5 = TO/RC switch, value8 = e turn off, ebrake = lidar info(brake)
+  drive_select.Drive_mode(value3, value6, values[1], value5, value8, ebrake);
 
   //Steering function call
-  steering.Left_Right(value1, value5, encoder_data , wheel);
+  steering.Left_Right(value1, value5, encoder_data , values[0]);
 
   //Read hall sensors call
   
+  String FR = String(digitalRead(R1)) + String(digitalRead(R2)) + String(digitalRead(R3));
   
-  
-  String FL = String(digitalRead(HALL1)) + String(digitalRead(HALL2)) + String(digitalRead(HALL3));
+  if(prev_FR != FR){
+    FR_ticks += 1;
+    prev_FR = FR;
+    //Serial.print(FR_ticks);
+    //Serial.print(" ");
+    //Serial.println(FR);
+  }
+  String FL = String(digitalRead(L1)) + String(digitalRead(L2)) + String(digitalRead(L3));
   
   if(prev_FL != FL){
     FL_ticks += 1;
     prev_FL = FL;
-    Serial.print(FL_ticks);
-    Serial.print(" ");
-    Serial.println(FL);
+    //Serial.print(FL_ticks);
+    //Serial.print(" ");
+    //Serial.println(FL);
   }
+  
   
 }

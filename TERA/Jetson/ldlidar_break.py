@@ -6,7 +6,7 @@ import serial
 from std_msgs.msg import Int32
 from sensor_msgs.msg import LaserScan
 
-arduino = serial.Serial(port='/dev/ttyACM0', baudrate= 115200, timeout=1)
+arduino = serial.Serial(port='/dev/ttyACM2', baudrate= 115200, timeout=1)
 
 
 def send_to_arduino(data):

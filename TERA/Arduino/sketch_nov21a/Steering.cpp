@@ -2,8 +2,9 @@
 #include "Arduino.h"
 #define DIR 44      //suuna määramise pin
 #define PUL 40      //steering pulse pin
-#define STEERING_CYCLE 20 //keeramise kiirus
-#define DELAY 100
+#define STEERING_CYCLE 30 //keeramise kiirus
+#define DELAY 100   //OLI #define DELAY 100
+#define DEADZONE 10
 /*
 int mapping(int a1, int a2, int b1, int b2, int input){
   int inValNorm = input - a1;
@@ -84,7 +85,7 @@ if(value5 == 1){
       
     
   
-      if(difference < 0 &&  abs(difference) > 5){
+      if(difference < 0 &&  abs(difference) > DEADZONE){
         digitalWrite(DIR, LOW);   //PAREMALE
   
         for (int i = 0; i < STEERING_CYCLE; i++){    //ühe tsükli pikkus, mida suurem seda pikem ring
@@ -95,7 +96,7 @@ if(value5 == 1){
           delayMicroseconds(DELAY);
         }
       }
-      if(difference > 0 && abs(difference) > 5){
+      if(difference > 0 && abs(difference) > DEADZONE){
         digitalWrite(DIR, HIGH);   //VASAKULE
   
         for (int i = 0; i < STEERING_CYCLE; i++){    //ühe tsükli pikkus, mida suurem seda pikem ring
@@ -146,7 +147,7 @@ if(value5 == 1){
     int difference = encoder - value1;
     //Serial.println(difference);
 
-    if(difference < 0 &&  abs(difference) > 10){
+    if(difference < 0 &&  abs(difference) > DEADZONE){
       digitalWrite(DIR, LOW);   //PAREMALE
 
       for (int i = 0; i < STEERING_CYCLE; i++){    //ühe tsükli pikkus, mida suurem seda pikem ring
@@ -157,7 +158,7 @@ if(value5 == 1){
         delayMicroseconds(DELAY);
       }
     }
-    if(difference > 0 && abs(difference) > 10){
+    if(difference > 0 && abs(difference) > DEADZONE){
       digitalWrite(DIR, HIGH);   //VASAKULE
 
       for (int i = 0; i < STEERING_CYCLE; i++){    //ühe tsükli pikkus, mida suurem seda pikem ring

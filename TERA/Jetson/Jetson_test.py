@@ -3,39 +3,48 @@
 import rospy
 #from std_msgs.msg import Int32
 from geometry_msgs.msg import Point32
+import time
+import serial
 
-def publish_info():
-    # Initialize the ROS node
-    rospy.init_node('info_publisher', anonymous=True)
+info = [0,0,0]
 
-    # Create publishers for the two integers on the "info" topic
-    pub = rospy.Publisher('info_1', Point32, queue_size=10)
-    #info_publisher_2 = rospy.Publisher('info_2', Int32, queue_size=10)
 
-    # Create a Point32 message
-    info_msg = Point32()
+arduino = serial.Serial(port='/dev/ttyACM0', baudrate=115200, timeout=0.5)
+print("Booting serial...")
+time.sleep(3)
+print("Done!")
 
-    # Rate at which to publish messages (in Hz)
-    rate = rospy.Rate(10)  # 1 Hz
+def callback(data):
+    #rospy.loginfo(rospy.get_caller_id() + "Steering %s", data.x)
+    info[0] = data.x
+    info[1] = data.y
+    info[2] = data.z
 
+def listener():
     while not rospy.is_shutdown():
-        # Publish the first integer
-        info_1 = 42  # Change this value as needed
-        info_msg.x =info_1
+        # Initialize the ROS node
+        rospy.init_node('listener', anonymous=True)
         
-        # Publish the second integer
-        info_2 = 99  # Change this value as needed
-        info_msg.y = info_2
 
-        pub.publish(info_msg)
-        # Log information for debugging
-        #rospy.loginfo("Published: info_1=%s, info_2=%s", info_1, info_2)
-
-        # Wait for the next iteration
-        rate.sleep()
+        # Create publishers for the two integers on the "info" topic
+        pub = rospy.Subscriber('info', Point32, callback)
+        #info_publisher_2 = rospy.Publisher('info_2', Int32, queue_size=10)
+        values = (f"{round(info[0])},{round(info[1])}")
+        #print(values)
+        inf = str(values)
+        #print(info[0])
+        arduino.write(bytes(inf, 'utf-8'))
+        time.sleep(0.05)
+        #print(arduino.readline().decode('utf-8'))
+   
 
 if __name__ == '__main__':
     try:
-        publish_info()
-    except rospy.ROSInterruptException:
-        pass
+        listener()
+    except KeyboardInterrupt:
+        print("Closing serial...")
+        arduino.close()
+    #except rospy.ROSInterruptException:
+        #print("Shutting down")
+        #arduino.close()
+        #pass

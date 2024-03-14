@@ -2,8 +2,8 @@
 #include "Arduino.h"
 #define DIR 44      //suuna määramise pin
 #define PUL 40      //steering pulse pin
-#define STEERING_CYCLE 20 //keeramise kiirus 20
-#define DELAY 100
+#define STEERING_CYCLE 60 //keeramise kiirus 20
+#define DELAY 50
 /*
 int mapping(int a1, int a2, int b1, int b2, int input){
   int inValNorm = input - a1;
@@ -74,15 +74,14 @@ if(value5 == 1){
     int realwheel = 268;
     
     //realwheel = map(wheel, 0, 655, 365, 170);
+    realwheel = map(wheel, 0, 655, 170, 365);
     
       
     //mapping(0, 655, 365, 170, wheel);
     //Serial.println(realwheel);
-    int difference = encoder - wheel;
+    int difference = encoder - realwheel;
     //Serial.println(difference);
-    if(wheel > 169 && wheel < 366){
-      
-    
+    if(realwheel > 169 && realwheel < 366){
   
       if(difference < 0 &&  abs(difference) > 5){
         digitalWrite(DIR, LOW);   //PAREMALE
