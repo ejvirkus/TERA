@@ -83,7 +83,7 @@ if(value5 == 1){
     //Serial.println(difference);
     if(realwheel > 169 && realwheel < 366){
   
-      if(difference < 0 &&  abs(difference) > 5){
+      if(difference < 0 &&  abs(difference) > 8){
         digitalWrite(DIR, LOW);   //PAREMALE
   
         for (int i = 0; i < STEERING_CYCLE; i++){    //ühe tsükli pikkus, mida suurem seda pikem ring
@@ -94,7 +94,7 @@ if(value5 == 1){
           delayMicroseconds(DELAY);
         }
       }
-      if(difference > 0 && abs(difference) > 5){
+      if(difference > 0 && abs(difference) > 8){
         digitalWrite(DIR, HIGH);   //VASAKULE
   
         for (int i = 0; i < STEERING_CYCLE; i++){    //ühe tsükli pikkus, mida suurem seda pikem ring

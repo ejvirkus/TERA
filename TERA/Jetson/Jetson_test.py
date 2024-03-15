@@ -5,11 +5,14 @@ import rospy
 from geometry_msgs.msg import Point32
 import time
 import serial
-
+from find_ports import find_ports
 info = [0,0,0]
 
+#Find the port for arduino:
+port = find_ports('arduino')
+#print(port)
 
-arduino = serial.Serial(port='/dev/ttyACM0', baudrate=115200, timeout=0.5)
+arduino = serial.Serial(port=port, baudrate=115200, timeout=0.5)
 print("Booting serial...")
 time.sleep(3)
 print("Done!")
@@ -34,7 +37,7 @@ def listener():
         inf = str(values)
         #print(info[0])
         arduino.write(bytes(inf, 'utf-8'))
-        time.sleep(0.05)
+        time.sleep(0.1)
         #print(arduino.readline().decode('utf-8'))
    
 

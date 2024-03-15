@@ -39,7 +39,7 @@ int values[2] = {328, 0};
 
 void setup() {
   Serial.begin(115200);   //was 115200
-  Serial.setTimeout(10);  //might need to be 40
+  Serial.setTimeout(15);  //might need to be 40
 
   pinMode(L1, INPUT);
   pinMode(L2, INPUT);
@@ -55,6 +55,7 @@ void loop() {
   
   //serial communication
   if (Serial.available() > 0){
+
     data = Serial.readString();
     //Serial.println(data);
     
@@ -67,6 +68,7 @@ void loop() {
       ptr = strtok(NULL, ",");
     }
     //Serial.println(values[0]);
+    
   }
 
   ebrake = digitalRead(10);
@@ -103,6 +105,7 @@ void loop() {
 
   //Read hall sensors call
   
+  /*
   String FR = String(digitalRead(R1)) + String(digitalRead(R2)) + String(digitalRead(R3));
   
   if(prev_FR != FR){
@@ -121,6 +124,8 @@ void loop() {
     //Serial.print(" ");
     //Serial.println(FL);
   }
+  //Send odometry and steering angle to jetson:
+  Serial.println(String(FR_ticks) + ", " + String(FL_ticks) + ", " + String(encoder_data));
   
-  
+  */
 }
