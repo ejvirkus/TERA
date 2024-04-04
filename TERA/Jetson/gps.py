@@ -6,6 +6,7 @@ from std_msgs.msg import String
 import serial
 import pynmea2
 import time
+import socket
 import csv
 from find_ports import find_ports
 
@@ -26,7 +27,20 @@ class GpsPublisher:
         
         self.csv_file = open(csv_file_path, 'w')  # Open CSV file for writing
         self.csv_writer = csv.writer(self.csv_file)
-        self.csv_writer.writerow(['Latitude', 'Longitude', 'Speed (km/h)'])  # Write header
+        self.csv_writer.writerow(['Latitude', 'Longitude', 'Altitude', 'Speed (km/h)'])  # Write header
+
+    def gps_base_tcp(self):
+        s = socket.socket()
+        port = 8002
+        s.connect(('213.168.5.170', port))
+        return s.recv(1024)
+
+    def status_fix(self):
+        try:
+            socket_info = self.gps_base_tcp()
+            ser.write(socket_info)
+        except Exception as e:
+            self.get_logger().error(f"Error writing to u-blox device: {e}")
 
     def get_gps_data(self):
         line = ser.readline().decode('utf-8')
@@ -34,6 +48,7 @@ class GpsPublisher:
             gga_msg = pynmea2.parse(line)
             latitude = gga_msg.latitude
             longitude = gga_msg.longitude
+            altitude = gga_msg.altitude
             speed = None
 
             # Find corresponding speed message
@@ -43,20 +58,21 @@ class GpsPublisher:
                     vtg_msg = pynmea2.parse(line)
                     speed = vtg_msg.spd_over_grnd_kmph  # Speed in km/h
                     break
-            print(latitude, longitude, speed)
-            return latitude, longitude, speed
-        return None, None, None
+            print(latitude, longitude, altitude, speed)
+            return latitude, longitude, altitude, speed
+        return None, None, None, None
 
     def publish_gps_data(self):
         while not rospy.is_shutdown():
-            latitude, longitude, speed = self.get_gps_data()
+            self.status_fix()
+            latitude, longitude, altitude, speed = self.get_gps_data()
             #if latitude is not None and longitude is not None and speed is not None:
-            gps_data_str = "{},{},{}".format(latitude, longitude, speed)
+            gps_data_str = "{},{},{},{}".format(latitude, longitude, altitude, speed)
             self.publisher.publish(gps_data_str)
             rospy.loginfo(gps_data_str)
             
             # Write data to CSV file
-            self.csv_writer.writerow([latitude, longitude, speed])
+            self.csv_writer.writerow([latitude, longitude, altitude, speed])
             self.csv_file.flush()  # Ensure data is written to the file immediately
 
             self.rate.sleep()  # Enforce the publishing rate
