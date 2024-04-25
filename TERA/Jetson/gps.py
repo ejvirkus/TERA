@@ -60,7 +60,7 @@ class GpsPublisher:
                     speed = vtg_msg.spd_over_grnd_kmph  # Speed in km/h
                     break
                 
-                elif line.startswith('$GNSS'):
+                elif line.startswith('$GPGSV'):
                     gnss_msg = pynmea2.parse(line)
                     direction = gnss_msg.azimuth
                     break
