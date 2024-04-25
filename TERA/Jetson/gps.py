@@ -27,7 +27,7 @@ class GpsPublisher:
         
         self.csv_file = open(csv_file_path, 'w')  # Open CSV file for writing
         self.csv_writer = csv.writer(self.csv_file)
-        self.csv_writer.writerow(['Latitude', 'Longitude', 'Altitude', 'Speed (km/h)'])  # Write header
+        self.csv_writer.writerow(['Latitude', 'Longitude', 'Altitude', 'Direction', 'Speed (km/h)'])  # Write header
 
     def gps_base_tcp(self):
         s = socket.socket()
@@ -50,6 +50,7 @@ class GpsPublisher:
             longitude = gga_msg.longitude
             altitude = gga_msg.altitude
             speed = None
+            
 
             # Find corresponding speed message
             while True:
@@ -58,21 +59,27 @@ class GpsPublisher:
                     vtg_msg = pynmea2.parse(line)
                     speed = vtg_msg.spd_over_grnd_kmph  # Speed in km/h
                     break
-            print(latitude, longitude, altitude, speed)
-            return latitude, longitude, altitude, speed
-        return None, None, None, None
+                
+                elif line.startswith('$GNSS'):
+                    gnss_msg = pynmea2.parse(line)
+                    direction = gnss_msg.azimuth
+                    break
+                
+            print(latitude, longitude, altitude, speed, direction)
+            return latitude, longitude, altitude, speed, direction
+        return None, None, None, None, None
 
     def publish_gps_data(self):
         while not rospy.is_shutdown():
             self.status_fix()
-            latitude, longitude, altitude, speed = self.get_gps_data()
+            latitude, longitude, altitude, speed, direction = self.get_gps_data()
             #if latitude is not None and longitude is not None and speed is not None:
-            gps_data_str = "{},{},{},{}".format(latitude, longitude, altitude, speed)
+            gps_data_str = "{},{},{},{},{}".format(latitude, longitude, altitude, speed, direction)
             self.publisher.publish(gps_data_str)
             rospy.loginfo(gps_data_str)
             
             # Write data to CSV file
-            self.csv_writer.writerow([latitude, longitude, altitude, speed])
+            self.csv_writer.writerow([latitude, longitude, altitude, speed, direction])
             self.csv_file.flush()  # Ensure data is written to the file immediately
 
             self.rate.sleep()  # Enforce the publishing rate
