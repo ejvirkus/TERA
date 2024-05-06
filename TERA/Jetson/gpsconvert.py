@@ -3,6 +3,7 @@
 import pymap3d as pm
 import pandas as pd
 import csv
+import numpy as np
 
 data = pd.read_csv("~/OneDrive/Documents/GitHub/TERA/TERA/gps_data.csv", header=0, usecols=['Latitude', 'Longitude', 'Altitude']) # opening gps file for reading
 
@@ -25,7 +26,7 @@ for i in data.index:
     lon = data.at[i, 'Longitude']
     alt = data.at[i, 'Altitude']
     x, y, z = pm.geodetic2enu(lat, lon, alt, lat0, lon0, h0)
-    x = round(2, x)
-    y = round(2, y)
-    z = round(2, z)
+    x = np.round(x, 4)
+    y = np.round(y, 4)
+    z = np.round(z, 4)
     csv_writer.writerow([x, y, z])
