@@ -115,3 +115,12 @@ RC pult:
 4. Edasi / tagasi - gaas
 5. V / P - keeramine vasakule ja paremale
 6. TX - puldi auku / RX - Arduino vool
+
+
+Mootorite conf: 
+1. Firmware 5.03
+2. Mootorite setup
+3. Puldi setup
+4. App settings -> General -> APP to use -> ADC
+5. App settings -> ADC -> Control type -> Duty cycle reverse button
+6. Motor settings -> General -> RPM 5000/-5000
