@@ -1,0 +1,126 @@
+﻿TERA komponendid:
+1. Jetson Orin nano (Python, bash script)
+2. Arduino mega 2560 (C++)
+3. 4x Hoverboard mootorit
+4. Lidar ld19
+5. LED esituled 12v sed
+6. Rooli samm mootor (keeramiseks)
+7. Rooli enkooder
+8. Aku 48v 20mAh
+9. RC pult flysky i-6s
+10. Tyro gamini 1s
+11. Volt / ampermeeter
+12. TPlink USB huub
+13. Si**** kaableid
+14. 
+
+
+
+TERA mõõtmed:
+
+
+      Rehvid / mootorid:
+           10 tolli / 254 mm
+           350W
+           HALL sensoriga
+           Poolust: 50
+           esi / taga veoga: 0,7 KW / 1 HP
+           nelikuga: 1,4 KW/ 2 HP
+
+
+      Kere:
+           Laius: 815 mm
+           Pikkus: 1260 mm
+           Kõrgus: ***  #veel ei ole kõik valmis ehitatud, et teada kõrgust
+           Teljevahe: 1000 mm
+           Kliirens: 90 mm
+________________
+
+
+
+
+TERA Robot bootup        3
+TERA Jetson Orin nano ja Arduino mega 2560 (ühenduse loomine)        3
+TERA Mootor kontrollerite seadistamine        3
+TERA robot kasutab Vesc 6 mk5 kontrollereid mis on omavahel ühenduses CAN - iga        3
+TERA mootori ja RC puldi seadistamine        3
+________________
+
+
+TERA Robot bootup
+
+
+1. Ühenda roboti aku
+2. Keera pea lülitit kella suunas
+3. Anna robotile aega (~1 min)
+4. RC saab kohe sõita ja kui on vaja TO kasutada siis peab ka MASTER sülearvuti töötama
+
+
+
+
+TERA Jetson Orin nano ja Arduino mega 2560 (ühenduse loomine)
+
+
+1. Ühendust annab luua Jetsoniga kas läbi võrgu (10.0.3.173) või ühendades Jetsoniga klaviatuur, hiir ja monitor.
+
+
+* Jetson User: tera, Parool: Pasw0rd
+* Kui Jetsoniga on ühendus olemas siis annab ka programmeerida Arduinot mis ühendub Jetsoniga USB kaabli kaudu.
+
+
+
+
+TERA Mootor kontrollerite seadistamine
+TERA robot kasutab Vesc 6 mk5 kontrollereid mis on omavahel ühenduses CAN - iga 
+
+
+1. Ühenda arvuti ühe kontrolleriga robotil USB micro b, Vesc 5.03 tarkvaraga.
+2. Tarkvaras tuleb üles CONNECT mida vajutades saab kontrollereid seadistama hakata.
+
+
+TERA mootori ja RC puldi seadistamine
+
+
+Mootor:
+1. CONNECT kontroller
+2. Üleval vasakul saab valida Wizard
+3. Setup motor FOC
+4. Motor - Large inrunner (~2000g)
+5. Battery - 20000Ah, Cell - 
+6. 
+
+
+
+
+
+
+
+RC pult:
+1. CONNECT kontroller
+2. Üleval vasakul saab valida Wizard
+3. Setup Input
+
+
+
+
+  
+
+
+
+
+
+1. RC / TO vahetus (RC - puldiga sõitmine / TO - Arvutiga kaugsõitmine)
+2. FWD / 4x4 / RWD (esi, nelik ja tagavedu)
+3. OFF / ON (OFF - sõitmine kinni / ON - sõitmine lubatud)
+4. Edasi / tagasi - gaas
+5. V / P - keeramine vasakule ja paremale
+6. TX - puldi auku / RX - Arduino vool
+
+
+Mootorite conf: 
+1. Firmware 5.03
+2. Mootorite setup
+3. Puldi setup
+4. App settings -> General -> APP to use -> ADC
+5. App settings -> ADC -> Control type -> Duty cycle reverse button
+6. Motor settings -> General -> RPM 5000/-5000
