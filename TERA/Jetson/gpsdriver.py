@@ -7,12 +7,15 @@ import pandas as pd
 import serial
 import pynmea2 as pm
 import numpy as np
+from numpy import genfromtxt
 import math
 import socket
 import csv
 from find_ports import find_ports
 
 data = pd.read_csv("C:\Users\emilj\OneDrive\Documents\GitHub\TERA\gps_ENU.csv", header=0, usecols=['X', 'Y'])
+
+data_array = genfromtxt(data, delimiter=',')
 
 gps_port = find_ports('u-blox GNSS receiver')
 baudrate = 9600
@@ -55,6 +58,13 @@ class Wayfinder:
             altitude = gga_msg.altitude
             X, Y = pm.geodetic2enu(latitude, longitude, altitude, self.lat0, self.lon0, self.alt0)
             return X, Y
+        
+            while True: # Finding the azimuth that corresponds to the coordinates.
+                line = ser.readline().decode('utf-8')
+                if line.startswith('$GPGSV'):
+                    gga_msg = pm.parse(line)
+                    azimuth = gga_msg.azimuth
+                    return azimuth
             
     def get_navigation_square(self):  # Calculating the square in which the robot will not search for a target location.
         self.current_location = self.get_gps_data()
@@ -63,8 +73,8 @@ class Wayfinder:
     
     def get_target_location(self): # Acquiring the closest or next point to which to move
         if self.target_location == []: # If there is no target location, the program finds the closest point to the robot.
-            for x in data.index:
-                current_min_dist = math.dist(data.at[x], self.get_gps_data()) # Iterating through all points 
+            for x in data_array.index:
+                current_min_dist = math.dist(data_array.at[x], self.get_gps_data()) # Iterating through all points 
 
                 if self.min_dist == None or current_min_dist < self.min_dist: # Assigning closest point
                     self.min_dist = current_min_dist
