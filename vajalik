@@ -1,0 +1,43 @@
+import rclpy
+from sensor_msgs.msg import NavSatFix
+from gmplot import GoogleMapPlotter
+
+# Callback function to handle incoming GPS data
+def gps_callback(msg):
+    global current_latitude, current_longitude
+    current_latitude = msg.latitude
+    current_longitude = msg.longitude
+
+# Function to update the map with new GPS coordinates
+def update_map(gmap):
+    gmap = GoogleMapPlotter(current_latitude, current_longitude, 19, map_type='satellite')
+    gmap.scatter([current_latitude], [current_longitude], color='red', size=5)
+    gmap.draw("gps_map_satellite.html")
+
+def main(args=None):
+    rclpy.init(args=args)
+
+    # Create a node
+    node = rclpy.create_node('gps_mapping_node')
+
+    # Subscribe to the GPS topic
+    node.create_subscription(NavSatFix, '/gps_topic', gps_callback)
+
+    # Initialize GoogleMapPlotter object with initial coordinates and zoom level
+    global current_latitude, current_longitude
+    current_latitude = 0  # Initial latitude
+    current_longitude = 0  # Initial longitude
+    gmap = GoogleMapPlotter(current_latitude, current_longitude, 19, map_type='satellite')
+
+    # Update the map with live GPS data
+    while rclpy.ok():
+        update_map(gmap)
+        rclpy.spin_once(node)
+        rclpy.sleep(1)  # Update interval in seconds
+
+    # Cleanup
+    node.destroy_node()
+    rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()
