@@ -1,43 +1,19 @@
-import rclpy
-from sensor_msgs.msg import NavSatFix
+import pandas as pd
 from gmplot import GoogleMapPlotter
 
-# Callback function to handle incoming GPS data
-def gps_callback(msg):
-    global current_latitude, current_longitude
-    current_latitude = msg.latitude
-    current_longitude = msg.longitude
+# Read GPS coordinates from CSV file
+data = pd.read_csv(r"C:\Users\Raivo Udris\Desktop\gps_data_tera.csv")
 
-# Function to update the map with new GPS coordinates
-def update_map(gmap):
-    gmap = GoogleMapPlotter(current_latitude, current_longitude, 19, map_type='satellite')
-    gmap.scatter([current_latitude], [current_longitude], color='red', size=5)
-    gmap.draw("gps_map_satellite.html")
+# Extract latitude and longitude columns
+lats = data['Latitude']
+lngs = data['Longitude']
 
-def main(args=None):
-    rclpy.init(args=args)
+# Initialize GoogleMapPlotter object with center coordinates and zoom level
+gmap = GoogleMapPlotter(lats.mean(), lngs.mean(), 19, map_type='satellite')
 
-    # Create a node
-    node = rclpy.create_node('gps_mapping_node')
+# Plot each GPS coordinate as a dot on the map
+for lat, lng in zip(lats, lngs):
+    gmap.scatter([lat], [lng], color='red', size=0.1, marker = True)
 
-    # Subscribe to the GPS topic
-    node.create_subscription(NavSatFix, '/gps_topic', gps_callback)
-
-    # Initialize GoogleMapPlotter object with initial coordinates and zoom level
-    global current_latitude, current_longitude
-    current_latitude = 0  # Initial latitude
-    current_longitude = 0  # Initial longitude
-    gmap = GoogleMapPlotter(current_latitude, current_longitude, 19, map_type='satellite')
-
-    # Update the map with live GPS data
-    while rclpy.ok():
-        update_map(gmap)
-        rclpy.spin_once(node)
-        rclpy.sleep(1)  # Update interval in seconds
-
-    # Cleanup
-    node.destroy_node()
-    rclpy.shutdown()
-
-if __name__ == '__main__':
-    main()
+# Save the map to an HTML file
+gmap.draw("gps_map_satellite.html")
