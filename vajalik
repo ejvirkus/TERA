@@ -6,14 +6,20 @@ class GPSPlotter:
     def __init__(self, csv_file):
         self.csv_file = csv_file
         self.map = folium.Map(location=[0, 0], zoom_start=10, tiles=None)
+        self.polyline = folium.PolyLine(locations=[], color='blue')
 
     def plot_from_csv(self):
+        points = []
         with open(self.csv_file, 'r') as file:
             reader = csv.DictReader(file)
             for row in reader:
                 latitude = float(row['Latitude'])
                 longitude = float(row['Longitude'])
+                points.append([latitude, longitude])
                 folium.Marker([latitude, longitude], popup='GPS Location').add_to(self.map)
+
+        self.polyline.locations = points
+        self.polyline.add_to(self.map)
 
         folium.TileLayer(
             tiles='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
