@@ -2,7 +2,7 @@ import pandas as pd
 from gmplot import GoogleMapPlotter
 
 # Read GPS coordinates from CSV file
-data = pd.read_csv(r"C:\Users\Raivo Udris\Desktop\gps_data_tera.csv")
+data = pd.read_csv(r"gps_data_tera.csv")
 
 # Extract latitude and longitude columns
 lats = data['Latitude']
