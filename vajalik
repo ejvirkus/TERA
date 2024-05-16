@@ -5,7 +5,7 @@ import webbrowser
 class GPSPlotter:
     def __init__(self, csv_file):
         self.csv_file = csv_file
-        self.map = folium.Map(location=[0, 0], zoom_start=2, tiles='Stamen Terrain')
+        self.map = folium.Map(location=[0, 0], zoom_start=2, tiles=None)
 
     def plot_from_csv(self):
         with open(self.csv_file, 'r') as file:
@@ -14,6 +14,16 @@ class GPSPlotter:
                 latitude = float(row['latitude'])
                 longitude = float(row['longitude'])
                 folium.Marker([latitude, longitude], popup='GPS Location').add_to(self.map)
+
+        # Add custom tile layer (satellite imagery)
+        folium.TileLayer(
+            tiles='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+            attr='Esri',
+            name='Esri Satellite',
+            overlay=True
+        ).add_to(self.map)
+
+        folium.LayerControl().add_to(self.map)
 
         # Save the map to an HTML file
         map_file_path = 'gps_map.html'
