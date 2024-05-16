@@ -2,7 +2,7 @@ import pandas as pd
 from gmplot import GoogleMapPlotter
 
 # Read GPS coordinates from CSV file
-data = pd.read_csv(r"gps_data_tera.csv")
+data = pd.read_csv(r"C:\Users\Raivo Udris\Desktop\gps_data_tera.csv")
 
 # Extract latitude and longitude columns
 lats = data['Latitude']
@@ -13,7 +13,7 @@ gmap = GoogleMapPlotter(lats.mean(), lngs.mean(), 19, map_type='satellite')
 
 # Plot each GPS coordinate as a dot on the map
 for lat, lng in zip(lats, lngs):
-    gmap.marker(lat, lng, color='red')
+    gmap.scatter([lat], [lng], color='red', size=0.1, marker = False)
 
 # Save the map to an HTML file
 gmap.draw("gps_map_satellite.html")
@@ -28,7 +28,7 @@ with open("live_gps_map.html", "w") as file:
         <meta http-equiv="refresh" content="5"> <!-- Refresh the page every 5 seconds -->
     </head>
     <body>
-        <iframe src="gps_map_satellite.html" width="100%" height="100%"></iframe>
+        <iframe src="gps_map_satellite.html" width="100%" height="900px"></iframe>
     </body>
     </html>
     """)
