@@ -5,7 +5,7 @@ import webbrowser
 class GPSPlotter:
     def __init__(self, csv_file):
         self.csv_file = csv_file
-        self.map = folium.Map(location=[0, 0], zoom_start=2)
+        self.map = folium.Map(location=[0, 0], zoom_start=2, tiles='Stamen Terrain')
 
     def plot_from_csv(self):
         with open(self.csv_file, 'r') as file:
