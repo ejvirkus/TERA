@@ -52,25 +52,11 @@ if __name__ == '__main__':
     main()
 
 
-
-import csv
-import folium
-import webbrowser
-
-class GPSPlotter:
-    def __init__(self, csv_file):
-        self.csv_file = csv_file
-        self.map = None  # Initialize the map later once we have coordinates
-        self.polyline = None  # Initialize the polyline later
-
-    def plot_from_csv(self):
-        points = []
-        with open(self.csv_file, 'r') as file:
-            reader = csv.DictReader(file)
-            for row in reader:
-                try:
-                    latitude = float(row['Latitude'])
-                    longitude = float(row['Longitude'])
-                    points.append([latitude, longitude])
-                except ValueError:
-                    print(f"Invalid data in row: {
+Traceback (most recent call last):
+  File "/home/tera/ros2_ws/src/gps_data/gps_data/gps_live_map.py", line 55, in <module>
+    main()
+  File "/home/tera/ros2_ws/src/gps_data/gps_data/gps_live_map.py", line 52, in main
+    gps_plotter.plot_from_csv()
+  File "/home/tera/ros2_ws/src/gps_data/gps_data/gps_live_map.py", line 32, in plot_from_csv
+    self.polyline.locations = points
+AttributeError: 'NoneType' object has no attribute 'locations'
