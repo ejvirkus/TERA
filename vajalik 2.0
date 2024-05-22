@@ -10,6 +10,7 @@ class GPSPlotter(Node):
         super().__init__('gps_plotter')
         self.map = None
         self.points = []
+        self.refresh_timer = None
 
     def create_map(self):
         # Initialize the map
@@ -35,7 +36,6 @@ class GPSPlotter(Node):
         latitude = msg.latitude
         longitude = msg.longitude
         self.points.append([latitude, longitude])
-        self.update_map()
 
     def update_map(self):
         if self.map is not None:
@@ -60,6 +60,10 @@ class GPSPlotter(Node):
             map_file_path = 'gps_map.html'
             self.map.save(map_file_path)
             webbrowser.open(map_file_path, new=0)  # Use new=0 to open in the same browser tab
+
+            # Schedule the next map update
+            self.refresh_timer = threading.Timer(5, self.update_map)
+            self.refresh_timer.start()
 
 def main():
     rclpy.init()
