@@ -10,12 +10,26 @@ class GPSPlotter(Node):
         super().__init__('gps_plotter')
         self.map = None
         self.points = []
-        self.subscription = self.create_subscription(
-            NavSatFix,
-            'gps_topic',  # Replace with your actual GPS topic name
-            self.listener_callback,
-            10
-        )
+
+    def create_map(self):
+        # Initialize the map
+        self.map = folium.Map(location=[0, 0], zoom_start=10, tiles=None)
+
+        # Add the Esri Satellite tile layer
+        folium.TileLayer(
+            tiles='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+            attr='Esri',
+            name='Esri Satellite',
+            overlay=True
+        ).add_to(self.map)
+
+        # Add a layer control to toggle the tile layer
+        folium.LayerControl().add_to(self.map)
+
+        # Save the map to an HTML file and open it in the browser
+        map_file_path = 'gps_map.html'
+        self.map.save(map_file_path)
+        webbrowser.open(map_file_path, new=0)  # Use new=0 to open in the same browser tab
 
     def listener_callback(self, msg):
         latitude = msg.latitude
@@ -24,11 +38,7 @@ class GPSPlotter(Node):
         self.update_map()
 
     def update_map(self):
-        if self.points:
-            # Initialize the map at the first coordinate if it doesn't exist
-            if self.map is None:
-                self.map = folium.Map(location=self.points[0], zoom_start=15, tiles=None)
-
+        if self.map is not None:
             # Clear the map and redraw it with the new points
             self.map = folium.Map(location=self.points[0], zoom_start=15, tiles=None)
 
@@ -58,6 +68,9 @@ def main():
     # Start ROS spinning in a separate thread
     executor_thread = threading.Thread(target=rclpy.spin, args=(gps_plotter,), daemon=True)
     executor_thread.start()
+
+    # Create the map
+    gps_plotter.create_map()
 
     try:
         # Keep the script running to listen for ROS messages
