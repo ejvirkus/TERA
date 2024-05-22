@@ -50,3 +50,30 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+
+tera@ubuntu:~$ /bin/python /home/tera/ros2_ws/src/gps_data/gps_data/gps_live_map.py
+Traceback (most recent call last):
+  File "/home/tera/.local/lib/python3.10/site-packages/folium/utilities.py", line 115, in _validate_locations_basics
+    next(iter(locations))
+StopIteration
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/tera/ros2_ws/src/gps_data/gps_data/gps_live_map.py", line 52, in <module>
+    main()
+  File "/home/tera/ros2_ws/src/gps_data/gps_data/gps_live_map.py", line 48, in main
+    gps_plotter = GPSPlotter(csv_file)
+  File "/home/tera/ros2_ws/src/gps_data/gps_data/gps_live_map.py", line 9, in __init__
+    self.polyline = folium.PolyLine(locations=[], color='blue')
+  File "/home/tera/.local/lib/python3.10/site-packages/folium/vector_layers.py", line 190, in __init__
+    super().__init__(locations, popup=popup, tooltip=tooltip)
+  File "/home/tera/.local/lib/python3.10/site-packages/folium/vector_layers.py", line 139, in __init__
+    self.locations = validate_multi_locations(locations)
+  File "/home/tera/.local/lib/python3.10/site-packages/folium/utilities.py", line 132, in validate_multi_locations
+    _validate_locations_basics(locations)
+  File "/home/tera/.local/lib/python3.10/site-packages/folium/utilities.py", line 117, in _validate_locations_basics
+    raise ValueError("Locations is empty.")
+ValueError: Locations is empty.
