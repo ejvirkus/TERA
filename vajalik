@@ -22,14 +22,10 @@ class GPSPlotter:
 
         if points:
             # Initialize the map at the first coordinate if points exist
-            self.map = folium.Map(location=points[0], zoom_start=10, tiles=None)
-
-            # Add markers to the map
-            for point in points:
-                folium.Marker(point, popup='GPS Location').add_to(self.map)
+            self.map = folium.Map(location=points[0], zoom_start=19, tiles=None)
 
             # Create and add the polyline
-            polyline = folium.PolyLine(locations=points, color='blue')
+            polyline = folium.PolyLine(locations=points, color='red')
             polyline.add_to(self.map)
 
             # Add the Esri Satellite tile layer
