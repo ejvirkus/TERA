@@ -5,7 +5,7 @@ import pandas as pd
 import csv
 import numpy as np
 
-data = pd.read_csv("~/OneDrive/Documents/GitHub/TERA/TERA/gps_data.csv", header=0, usecols=['Latitude', 'Longitude', 'Altitude']) # opening gps file for reading
+data = pd.read_csv("/home/ejvirkus/TERA/gps_data_tera.csv", header=0, usecols=['Latitude', 'Longitude', 'Altitude']) # opening gps file for reading
 
 csv_ENU_path = 'gps_ENU.csv' #opening the gps_ENU file for writing new values 
 csv_file = open(csv_ENU_path, 'w', newline='')
