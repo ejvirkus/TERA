@@ -96,7 +96,7 @@ void loop()
     //int val = int(trunc(bytes.value));
     wheel = bytes.x;
     moving = bytes.y;
-    values.val = wheel;
+    values.val = moving;
     Serial.write((const uint8_t*)&values, sizeof(values));
     
 

@@ -16,16 +16,16 @@ int Drive_selector_switch::Drive_mode(int value3, int value6, int throttle, int 
       if(value5 == 1){
           if(value6 == 1) //Honda
           {
-            if(value3 > 0)
+            if(throttle > 0)
             {
-              analogWrite(8, value3);
+              analogWrite(8, throttle);
               analogWrite(9, 0);
             }
             
-            if(value3 < 0)
+            if(throttle < 0)
             {
               analogWrite(9, 255);
-              analogWrite(8, abs(value3));
+              analogWrite(8, abs(throttle));
             }
            
             return 1;
