@@ -8,7 +8,6 @@ import serial
 import pynmea2
 import csv
 import socket
-import pymap3d as pm
 
 csv_file_path = 'gps_data_tera.csv'  # Path to the CSV file
 
@@ -33,8 +32,6 @@ class GpsPublisher(Node):
         self.csv_file = open(csv_file_path, 'w')  # Open CSV file for writing
         self.csv_writer = csv.writer(self.csv_file)
         self.csv_writer.writerow(['Latitude', 'Longitude', 'Altitude'])  # Write header
-        self.lat0, self.lon0, self.h0 = 58.3428685594, 25.5692475361, 91.357 #GPS base station coordinates
-        self.latitude, self.longitude, self.altitude = 0, 0, 0
 
 
     def open_serial_connection(self):
@@ -50,22 +47,18 @@ class GpsPublisher(Node):
                 line = self.serial_conn.readline().decode('utf-8')
                 if line.startswith('$GNGGA'):
                     gga_msg = pynmea2.parse(line)
-                    self.latitude = gga_msg.latitude
-                    self.longitude = gga_msg.longitude
-                    self.altitude = gga_msg.altitude
+                    latitude = gga_msg.latitude
+                    longitude = gga_msg.longitude
+                    altitude = gga_msg.altitude
 
                 elif line.startswith('$GPGSV'):
                     gnss_msg = pynmea2.parse(line)
                     direction = gnss_msg.azimuth
 
-                    return self.latitude, self.longitude, self.altitude, direction
+                    return latitude, longitude, altitude, direction
             except Exception as e:
                 self.get_logger().error(f"Error reading GPS data: {e}")
         return None, None, None, None
-    
-    def get_gps_ENU(self):
-        x, y, z = pm.geodetic2enu(self.latitude, self.longitude, self.altitude, self.lat0, self.lon0, self.h0)
-        return x, y, z
 
     def publish_gps_data(self):
         latitude, longitude, altitude, direction = self.get_gps_data()
