@@ -26,7 +26,7 @@ for i in data.index:
     lon = data.at[i, 'Longitude']
     alt = data.at[i, 'Altitude']
     x, y, z = pm.geodetic2enu(lat, lon, alt, lat0, lon0, h0)
-    x = np.round(x, 4)
-    y = np.round(y, 4)
-    z = np.round(z, 4)
+    x = np.round(x, 2)
+    y = np.round(y, 2)
+    z = np.round(z, 2)
     csv_writer.writerow([x, y, z])
