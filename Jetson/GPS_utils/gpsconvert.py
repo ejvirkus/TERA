@@ -5,7 +5,7 @@ import pandas as pd
 import csv
 import numpy as np
 
-data = pd.read_csv("/home/tera/TERA/TERA/Jetson/gps_data/gps_data/gps_data_tera.csv", header=0, usecols=['Latitude', 'Longitude', 'Altitude']) # opening gps file for reading
+data = pd.read_csv("/home/ejvirkus/TERA/gps_data_tera.csv", header=0, usecols=['Latitude', 'Longitude', 'Altitude']) # opening gps file for reading
 
 csv_ENU_path = 'gps_ENU.csv' #opening the gps_ENU file for writing new values 
 csv_file = open(csv_ENU_path, 'w', newline='')
@@ -26,7 +26,7 @@ for i in data.index:
     lon = data.at[i, 'Longitude']
     alt = data.at[i, 'Altitude']
     x, y, z = pm.geodetic2enu(lat, lon, alt, lat0, lon0, h0)
-    x = np.round(x, 2)
-    y = np.round(y, 2)
-    z = np.round(z, 2)
+    x = np.round(x, 4)
+    y = np.round(y, 4)
+    z = np.round(z, 4)
     csv_writer.writerow([x, y, z])
