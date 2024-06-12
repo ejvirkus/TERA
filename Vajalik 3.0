@@ -17,12 +17,16 @@ class ScanSubscriber(Node):
         self.get_logger().info("ScanSubscriber node has been started")
 
     def scan_callback(self, scan_msg):
-        ranges = scan_msg.ranges
+        self.get_logger().info("scan_callback called")
+
+        # Print the raw data received from the LiDAR
+        raw_data = scan_msg.ranges
+        self.get_logger().info(f"Raw LiDAR data: {raw_data}")
 
         # Extract a specific range of data
         start_mid = 100
         end_mid = 128
-        extracted_data = ranges[start_mid:end_mid]
+        extracted_data = raw_data[start_mid:end_mid]
 
         # Print the extracted distances
         self.get_logger().info(f"Extracted distances: {extracted_data}")
