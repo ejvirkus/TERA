@@ -2,35 +2,7 @@
 
 import rclpy
 from rclpy.node import Node
-import time
-import serial
 from sensor_msgs.msg import LaserScan
-
-# Ensure the serial port and baudrate are correct for your Arduino
-try:
-    arduino = serial.Serial(port='/dev/ttyACM0', baudrate=115200, timeout=1)
-except serial.SerialException as e:
-    print(f"Error opening serial port: {e}")
-    arduino = None
-
-def send_to_arduino(data):
-    if arduino:
-        arduino.write(data.encode())
-        time.sleep(0.05)
-        print(f"Sent to Arduino: {data}")
-    else:
-        print("Arduino not connected")
-
-def read_arduino():
-    if arduino:
-        info = arduino.readline()
-        if info:
-            info = info.decode()
-            print("Received from Arduino: ", info)
-        else:
-            print("No info received from Arduino")
-    else:
-        print("Arduino not connected")
 
 class ScanSubscriber(Node):
 
@@ -42,7 +14,7 @@ class ScanSubscriber(Node):
             self.scan_callback,
             10)
         self.subscription  # prevent unused variable warning
-        print("ScanSubscriber node has been started")
+        self.get_logger().info("ScanSubscriber node has been started")
 
     def scan_callback(self, scan_msg):
         ranges = scan_msg.ranges
@@ -52,34 +24,37 @@ class ScanSubscriber(Node):
         end_mid = 128
         extracted_data = ranges[start_mid:end_mid]
 
+        # Print the extracted distances
+        self.get_logger().info(f"Extracted distances: {extracted_data}")
+
         # Find the minimum value in the extracted data
         min_distance = min(extracted_data)
 
+        # Find the index of the minimum distance
+        min_index = extracted_data.index(min_distance)
+        angle_of_min_distance = start_mid + min_index
+
         # Determine action based on the minimum value
         if min_distance < 1:
-            no = '1'
+            action = 'Obstacle detected'
         else:
-            no = '0'
+            action = 'Path clear'
 
-        send_to_arduino(no)
-        read_arduino()
+        # Print the result
+        self.get_logger().info(f"Min distance: {min_distance:.2f} m at angle index: {angle_of_min_distance} - {action}")
 
 
 def main(args=None):
     rclpy.init(args=args)
-    print("ROS2 initialization completed")
-
-    scan_subscriber = ScanSubscriber()
-    print("Created ScanSubscriber instance")
+    node = ScanSubscriber()
 
     try:
-        rclpy.spin(scan_subscriber)
+        rclpy.spin(node)
     except KeyboardInterrupt:
         pass
 
-    scan_subscriber.destroy_node()
+    node.destroy_node()
     rclpy.shutdown()
-    print("ROS2 shutdown completed")
 
 
 if __name__ == '__main__':
