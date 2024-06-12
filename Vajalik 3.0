@@ -6,20 +6,31 @@ import time
 import serial
 from sensor_msgs.msg import LaserScan
 
-arduino = serial.Serial(port='/dev/ttyACM0', baudrate=115200, timeout=1)
-
+# Ensure the serial port and baudrate are correct for your Arduino
+try:
+    arduino = serial.Serial(port='/dev/ttyACM0', baudrate=115200, timeout=1)
+except serial.SerialException as e:
+    print(f"Error opening serial port: {e}")
+    arduino = None
 
 def send_to_arduino(data):
-    arduino.write(data.encode())
-    time.sleep(0.05)
+    if arduino:
+        arduino.write(data.encode())
+        time.sleep(0.05)
+        print(f"Sent to Arduino: {data}")
+    else:
+        print("Arduino not connected")
 
 def read_arduino():
-    info = arduino.readline()
-    if info:
-        info = info.decode()
-        print("Received: ", info)
+    if arduino:
+        info = arduino.readline()
+        if info:
+            info = info.decode()
+            print("Received from Arduino: ", info)
+        else:
+            print("No info received from Arduino")
     else:
-        print("No info received\n")
+        print("Arduino not connected")
 
 class ScanSubscriber(Node):
 
@@ -31,6 +42,7 @@ class ScanSubscriber(Node):
             self.scan_callback,
             10)
         self.subscription  # prevent unused variable warning
+        print("ScanSubscriber node has been started")
 
     def scan_callback(self, scan_msg):
         ranges = scan_msg.ranges
@@ -55,13 +67,19 @@ class ScanSubscriber(Node):
 
 def main(args=None):
     rclpy.init(args=args)
+    print("ROS2 initialization completed")
 
     scan_subscriber = ScanSubscriber()
+    print("Created ScanSubscriber instance")
 
-    rclpy.spin(scan_subscriber)
+    try:
+        rclpy.spin(scan_subscriber)
+    except KeyboardInterrupt:
+        pass
 
     scan_subscriber.destroy_node()
     rclpy.shutdown()
+    print("ROS2 shutdown completed")
 
 
 if __name__ == '__main__':
