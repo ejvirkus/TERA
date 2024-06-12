@@ -1,21 +1,19 @@
 #!/usr/bin/env python3
 
 import rclpy
+from rclpy.node import Node
 import time
 import serial
-from std_msgs.msg import Int32
 from sensor_msgs.msg import LaserScan
 
-arduino = serial.Serial(port='/dev/ttyACM0', baudrate= 115200, timeout=1)
+arduino = serial.Serial(port='/dev/ttyACM0', baudrate=115200, timeout=1)
 
 
 def send_to_arduino(data):
     arduino.write(data.encode())
-    #print("Sent!")
     time.sleep(0.05)
 
 def read_arduino():
-    #print('reading')
     info = arduino.readline()
     if info:
         info = info.decode()
@@ -23,41 +21,48 @@ def read_arduino():
     else:
         print("No info received\n")
 
-def scan_callback(scan_msg):
-    ranges = scan_msg.ranges
+class ScanSubscriber(Node):
 
-    # Extract a specific range of data
-    start_mid = 100
-    end_mid = 128
-    extracted_data = ranges[start_mid:end_mid]
+    def __init__(self):
+        super().__init__('scan_subscriber')
+        self.subscription = self.create_subscription(
+            LaserScan,
+            '/scan',
+            self.scan_callback,
+            10)
+        self.subscription  # prevent unused variable warning
 
-    # Find the minimum value in the extracted data
-    min_distance = min(extracted_data)
+    def scan_callback(self, scan_msg):
+        ranges = scan_msg.ranges
 
-    # Determine action based on the minimum value
-    if min_distance < 1:
-        no = '1'
-    else:
-        no = '0'
+        # Extract a specific range of data
+        start_mid = 100
+        end_mid = 128
+        extracted_data = ranges[start_mid:end_mid]
 
-    send_to_arduino(no)
-    read_arduino()
+        # Find the minimum value in the extracted data
+        min_distance = min(extracted_data)
 
-    #pub = rospy.Publisher('brake', Int32, queue_size=1)
-    #pub.publish(no)
-    #print(no)
+        # Determine action based on the minimum value
+        if min_distance < 1:
+            no = '1'
+        else:
+            no = '0'
+
+        send_to_arduino(no)
+        read_arduino()
 
 
-def scan_subscriber():
-    rclpy.init_node('scan_subscriber', anonymous=True)
-    rclpy.Subscriber('/scan', LaserScan, scan_callback)
-    
-    rclpy.spin()
+def main(args=None):
+    rclpy.init(args=args)
+
+    scan_subscriber = ScanSubscriber()
+
+    rclpy.spin(scan_subscriber)
+
+    scan_subscriber.destroy_node()
+    rclpy.shutdown()
+
 
 if __name__ == '__main__':
-    try:
-        scan_subscriber()
-        
-    except rclpy.ROSInterruptException:
-        print("Failed")
-        pass
+    main()
