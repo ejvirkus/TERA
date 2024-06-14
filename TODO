@@ -1,0 +1,9 @@
+1. Rooli loogika paremaks(Lugeda steppe ning backupiks ainult enkoodrit kasutada)
+2. Lahtised juhtmed katta (Eriti rooli juurest) 
+3. Shield arduino peale, et 5v juhtmed oleks paremini kinni (Mitte wago)
+4. LIDAR ROS2 peal tööle
+5. Jetsoni juhe paremaks (Hetkel mingis asendis lihtsalt kaob vool ära korraks)
+6. Arduinole 5v input?? Sest kui Jetsonil vool kaob siis kaob ka Arduino vool jms.
+8. Enkoodri hammasrihm paremini kinni
+9. Kast ja juhtmed veekindlaks
+10. Jahutus kasti
